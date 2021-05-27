@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
 
 const sendUserRequest = async () => {
   try {
@@ -27,10 +28,6 @@ const formatUserData = ({ data }) => {
   });
 };
 
-const sortUserData = ({ data }) => {
-  return data;
-};
-
 const DirectoryContainer = styled.div``;
 
 const CardContainer = styled.article`
@@ -48,11 +45,13 @@ const DirectorySortHeading = styled.h3`
   margin-top: 0.5rem;
 `;
 
-const DirectorySortList = styled.ul``;
-
 const DirectorySortListItem = styled.li`
   cursor: pointer;
   padding: 0.25rem;
+  background: ${(props) => props.selected && "black"};
+  color: ${(props) => (props.selected ? "#FFF" : "#000")};
+  border-radius: ${(props) => props.selected && "5px"};
+  transition: all 0.2s linear;
 `;
 
 const Card = ({ user }) => {
@@ -89,38 +88,103 @@ const getCategoryHeadings = (users) => {
   // Return each list as a regular old array
   return [
     {
-      heading: "Department",
+      heading: "department",
       data: [...uniqueDepartments],
     },
     {
-      heading: "Title",
+      heading: "title",
       data: [...uniqueTitles],
     },
     {
-      heading: "Location",
+      heading: "location",
       data: [...uniqueLocations],
     },
   ];
 };
 
-const CategoryList = ({ category }) => {
+const CategoryList = ({ category, filterPreference, setFilterPreference }) => {
   const { heading, data } = category;
+  const [expanded, setExpanded] = useState(false);
+
+  const updatePreferences = (preference) => {
+    if (filterPreference[heading] === preference) {
+      setFilterPreference({ ...filterPreference, [heading]: null });
+    } else setFilterPreference({ ...filterPreference, [heading]: preference });
+  };
+
   return (
     <>
-      <DirectorySortHeading>{heading}</DirectorySortHeading>
-      <DirectorySortList>
-        {data.map((item) => (
-          <DirectorySortListItem>{item}</DirectorySortListItem>
-        ))}
-      </DirectorySortList>
+      <section style={{ width: "150px" }}>
+        <header
+          onClick={() => setExpanded(!expanded)}
+          style={{
+            background: "black",
+            padding: "0.25rem",
+            margin: 0,
+            color: "white",
+            marginTop: "1rem",
+          }}
+        >
+          <DirectorySortHeading>{heading}</DirectorySortHeading>
+          {expanded ? "-" : "+"}
+        </header>
+        <AnimatePresence>
+          {expanded && (
+            <motion.main
+              style={{ overflow: "hidden" }}
+              initial={{ height: 0 }}
+              animate={{ height: "auto" }}
+              exit={{ height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ul>
+                {data.map((item, i) => (
+                  <DirectorySortListItem
+                    selected={filterPreference[heading] === item}
+                    key={`sortItem_${i}`}
+                    onClick={() => updatePreferences(item)}
+                  >
+                    {item}
+                  </DirectorySortListItem>
+                ))}
+              </ul>
+            </motion.main>
+          )}
+        </AnimatePresence>
+      </section>
     </>
   );
 };
 
 const UserDirectory = () => {
   const [userDirectory, setUserDirectory] = useState([]);
-  const [sortPreference, setSortPreference] = useState(null);
-  const sortedData = sortUserData(userDirectory, sortPreference);
+  const [filterPreference, setFilterPreference] = useState({
+    department: null,
+    title: null,
+    location: null,
+  });
+
+  const filterByCategory = (userDirectory, filterPreference) => {
+    let filteredData = [...userDirectory];
+    if (filterPreference.location !== null) {
+      filteredData = userDirectory.filter(
+        (user) => user.location === filterPreference.location
+      );
+    }
+    if (filterPreference.department !== null) {
+      filteredData = userDirectory.filter(
+        (user) => user.department === filterPreference.department
+      );
+    }
+    if (filterPreference.title !== null) {
+      filteredData = userDirectory.filter(
+        (user) => user.title === filterPreference.title
+      );
+    }
+    return filteredData;
+  };
+
+  const filteredData = filterByCategory(userDirectory, filterPreference);
 
   const categoryHeadings =
     userDirectory.length && getCategoryHeadings(userDirectory);
@@ -131,7 +195,7 @@ const UserDirectory = () => {
       .then((res) => setUserDirectory(res));
   }, []);
 
-  return userDirectory.length ? (
+  return filteredData.length ? (
     <>
       <header style={{ margin: "2rem auto", textAlign: "center" }}>
         <h1>User Directory</h1>
@@ -148,13 +212,18 @@ const UserDirectory = () => {
         }}
       >
         <div>
-          <h2>Sort By</h2>
+          <h2>Filter By</h2>
           {categoryHeadings.map((category, i) => (
-            <CategoryList category={category} />
+            <CategoryList
+              category={category}
+              key={category}
+              filterPreference={filterPreference}
+              setFilterPreference={setFilterPreference}
+            />
           ))}
         </div>
         <DirectoryContainer>
-          {userDirectory.map((user, i) => (
+          {filteredData.map((user, i) => (
             <Card user={user} key={`user_${i}`} />
           ))}
         </DirectoryContainer>
