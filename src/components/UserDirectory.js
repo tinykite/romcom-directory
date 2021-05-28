@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
+import Card from "./Card";
+import Accordion from "./Accordion";
 
 const sendUserRequest = async () => {
   try {
+    // This will return a 10-person sample user directory
     const resp = await axios.get("https://jsonplaceholder.typicode.com/users");
     return resp;
   } catch (err) {
@@ -15,6 +16,8 @@ const sendUserRequest = async () => {
 const formatUserData = ({ data }) => {
   return data.map((user, i) => {
     const { name, phone, email, address } = user;
+    // Everyone in a romantic comedy works in either publishing or architecture
+    // So for fun, everyone in our 10-person sample directory will too
     const title = i < 5 ? "Magazine Editor" : "Architect";
     const department = i > 5 ? "Design" : "Art";
     return {
@@ -28,47 +31,7 @@ const formatUserData = ({ data }) => {
   });
 };
 
-const DirectoryContainer = styled.div``;
-
-const CardContainer = styled.article`
-  background: #f8f8f8;
-  padding: 0.5rem 2rem;
-  width: 250px;
-  border-radius: 15px;
-
-  & + & {
-    margin-top: 1rem;
-  }
-`;
-
-const DirectorySortHeading = styled.h3`
-  margin-top: 0.5rem;
-`;
-
-const DirectorySortListItem = styled.li`
-  cursor: pointer;
-  padding: 0.25rem;
-  background: ${(props) => props.selected && "black"};
-  color: ${(props) => (props.selected ? "#FFF" : "#000")};
-  border-radius: ${(props) => props.selected && "5px"};
-  transition: all 0.2s linear;
-`;
-
-const Card = ({ user }) => {
-  const { name, department, title, location, phone, email } = user;
-  return (
-    <CardContainer>
-      <h2>{name}</h2>
-      <h3>{department}</h3>
-      <em>{title}</em>
-      <p>{location}</p>
-      <p>{phone}</p>
-      <p>{email}</p>
-    </CardContainer>
-  );
-};
-
-const getCategoryHeadings = (users) => {
+const getCategoryTitles = (users) => {
   let allLocations = [];
   let allDepartments = [];
   let allTitles = [];
@@ -81,6 +44,7 @@ const getCategoryHeadings = (users) => {
   });
 
   // Remove duplicates using a set
+  // A set is case-sensitive, so this will not remove duplicates that differ in capitalization
   const uniqueLocations = new Set(allLocations);
   const uniqueDepartments = new Set(allDepartments);
   const uniqueTitles = new Set(allTitles);
@@ -88,72 +52,38 @@ const getCategoryHeadings = (users) => {
   // Return each list as a regular old array
   return [
     {
-      heading: "department",
+      title: "department",
       data: [...uniqueDepartments],
     },
     {
-      heading: "title",
+      title: "title",
       data: [...uniqueTitles],
     },
     {
-      heading: "location",
+      title: "location",
       data: [...uniqueLocations],
     },
   ];
 };
 
-const CategoryList = ({ category, filterPreference, setFilterPreference }) => {
-  const { heading, data } = category;
-  const [expanded, setExpanded] = useState(false);
-
-  const updatePreferences = (preference) => {
-    if (filterPreference[heading] === preference) {
-      setFilterPreference({ ...filterPreference, [heading]: null });
-    } else setFilterPreference({ ...filterPreference, [heading]: preference });
-  };
-
-  return (
-    <>
-      <section style={{ width: "150px" }}>
-        <header
-          onClick={() => setExpanded(!expanded)}
-          style={{
-            background: "black",
-            padding: "0.25rem",
-            margin: 0,
-            color: "white",
-            marginTop: "1rem",
-          }}
-        >
-          <DirectorySortHeading>{heading}</DirectorySortHeading>
-          {expanded ? "-" : "+"}
-        </header>
-        <AnimatePresence>
-          {expanded && (
-            <motion.main
-              style={{ overflow: "hidden" }}
-              initial={{ height: 0 }}
-              animate={{ height: "auto" }}
-              exit={{ height: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ul>
-                {data.map((item, i) => (
-                  <DirectorySortListItem
-                    selected={filterPreference[heading] === item}
-                    key={`sortItem_${i}`}
-                    onClick={() => updatePreferences(item)}
-                  >
-                    {item}
-                  </DirectorySortListItem>
-                ))}
-              </ul>
-            </motion.main>
-          )}
-        </AnimatePresence>
-      </section>
-    </>
-  );
+const filterByCategory = (userDirectory, filterPreference) => {
+  let filteredData = [...userDirectory];
+  if (filterPreference.location !== null) {
+    filteredData = userDirectory.filter(
+      (user) => user.location === filterPreference.location
+    );
+  }
+  if (filterPreference.department !== null) {
+    filteredData = userDirectory.filter(
+      (user) => user.department === filterPreference.department
+    );
+  }
+  if (filterPreference.title !== null) {
+    filteredData = userDirectory.filter(
+      (user) => user.title === filterPreference.title
+    );
+  }
+  return filteredData;
 };
 
 const UserDirectory = () => {
@@ -164,30 +94,9 @@ const UserDirectory = () => {
     location: null,
   });
 
-  const filterByCategory = (userDirectory, filterPreference) => {
-    let filteredData = [...userDirectory];
-    if (filterPreference.location !== null) {
-      filteredData = userDirectory.filter(
-        (user) => user.location === filterPreference.location
-      );
-    }
-    if (filterPreference.department !== null) {
-      filteredData = userDirectory.filter(
-        (user) => user.department === filterPreference.department
-      );
-    }
-    if (filterPreference.title !== null) {
-      filteredData = userDirectory.filter(
-        (user) => user.title === filterPreference.title
-      );
-    }
-    return filteredData;
-  };
-
   const filteredData = filterByCategory(userDirectory, filterPreference);
-
-  const categoryHeadings =
-    userDirectory.length && getCategoryHeadings(userDirectory);
+  const categoryTitles =
+    userDirectory.length && getCategoryTitles(userDirectory);
 
   useEffect(() => {
     sendUserRequest()
@@ -211,22 +120,22 @@ const UserDirectory = () => {
           gap: "2rem",
         }}
       >
-        <div>
+        <aside>
           <h2>Filter By</h2>
-          {categoryHeadings.map((category, i) => (
-            <CategoryList
+          {categoryTitles.map((category, i) => (
+            <Accordion
               category={category}
               key={category}
               filterPreference={filterPreference}
               setFilterPreference={setFilterPreference}
             />
           ))}
-        </div>
-        <DirectoryContainer>
+        </aside>
+        <div>
           {filteredData.map((user, i) => (
             <Card user={user} key={`user_${i}`} />
           ))}
-        </DirectoryContainer>
+        </div>
       </main>
     </>
   ) : (
