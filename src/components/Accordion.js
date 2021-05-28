@@ -14,6 +14,11 @@ const AccordionTitle = styled.h3`
   margin-top: 0.5rem;
 `;
 
+const AccordionList = styled.ul`
+  list-style: none;
+  padding: 0;
+`;
+
 const AccordionListItem = styled.li`
   cursor: pointer;
   padding: 0.25rem;
@@ -55,7 +60,7 @@ const Accordion = ({ category, filterPreference, setFilterPreference }) => {
               exit={{ height: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <ul>
+              <AccordionList>
                 {categoryData.map((listItem, i) => (
                   <AccordionListItem
                     selected={filterPreference[categoryTitle] === listItem}
@@ -72,7 +77,7 @@ const Accordion = ({ category, filterPreference, setFilterPreference }) => {
                     {listItem}
                   </AccordionListItem>
                 ))}
-              </ul>
+              </AccordionList>
             </motion.main>
           )}
         </AnimatePresence>
