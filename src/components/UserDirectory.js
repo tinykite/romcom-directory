@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import styled from "styled-components";
 import Card from "./Card";
 import Accordion from "./Accordion";
+
+const DirectoryHeader = styled.header`
+  margin: "2rem auto";
+`;
+
+const DirectoryMain = styled.main`
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+`;
 
 const sendUserRequest = async () => {
   try {
@@ -123,20 +134,14 @@ const UserDirectory = () => {
 
   return userDirectory.length ? (
     <>
-      <header style={{ margin: "2rem auto", textAlign: "center" }}>
+      <DirectoryHeader>
         <h1>User Directory</h1>
         <em>
           Just magazine editors and architects for now. Basically the cast of
           every romantic comedy ever.
         </em>
-      </header>
-      <main
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "2rem",
-        }}
-      >
+      </DirectoryHeader>
+      <DirectoryMain>
         <aside>
           <h2>Filter By</h2>
           {categoryTitles.map((category, i) => (
@@ -155,7 +160,7 @@ const UserDirectory = () => {
               ))
             : "No users match this criteria"}
         </div>
-      </main>
+      </DirectoryMain>
     </>
   ) : (
     "Loading"
