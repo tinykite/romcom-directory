@@ -6,12 +6,15 @@ import Accordion from "./Accordion";
 
 const DirectoryHeader = styled.header`
   margin: 2rem auto;
+  text-align: center;
 `;
 
 const DirectoryMain = styled.main`
-  display: flex;
-  justify-content: center;
+  display: grid;
+  place-content: center;
   gap: 2rem;
+  grid-template-columns: 150px 300px;
+  margin: 0 auto;
 `;
 
 const sendUserRequest = async () => {
