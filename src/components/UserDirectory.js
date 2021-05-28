@@ -149,9 +149,11 @@ const UserDirectory = () => {
           ))}
         </aside>
         <div>
-          {visibleData.map((user, i) => (
-            <Card user={user} key={`user_${i}`} />
-          ))}
+          {visibleData.length
+            ? visibleData.map((user, i) => (
+                <Card user={user} key={`user_${i}`} />
+              ))
+            : "No users match this criteria"}
         </div>
       </main>
     </>
