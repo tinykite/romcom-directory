@@ -5,7 +5,7 @@ import Card from "./Card";
 import Accordion from "./Accordion";
 
 const DirectoryHeader = styled.header`
-  margin: "2rem auto";
+  margin: 2rem auto;
 `;
 
 const DirectoryMain = styled.main`
