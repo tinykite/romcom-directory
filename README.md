@@ -2,9 +2,13 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). It also relies on:
 
-- [Styled Components](https://styled-components.com/), a CSS-in-JS library
-- [Framer Motion](https://www.framer.com/api/motion/), a React animation library
+- [Styled Components](https://styled-components.com/), a CSS-in-JS library for styling components
+- [Framer Motion](https://www.framer.com/api/motion/), a React animation library to animate accordion components
 - [Axios](https://axios-http.com/docs/intro) a promise-based HTTP client for the browser and node.js
+
+It doesn't currently contain any tests. For a production application, I would definitely (at a minimum) write unit tests for all functions using Jest or Chai+ Mocha.
+
+The app is also admittedly very ugly! In a production environment, I would polish quite a few design details that include finessing paddings and margin, as well as replacing the + and - text in the accordion containers with icons. I'd more than likely insert them as pseudo-elements (so that they don't appear in the DOM, for accessibility reasons—although there are plenty of other ways to hide things from screen-readers), and alternatively add a button with an aria-attribute (`aria-expanded`) to toggle the actual open/close state of the container.
 
 ## Available Scripts
 
