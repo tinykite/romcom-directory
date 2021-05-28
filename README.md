@@ -4,11 +4,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 - [Styled Components](https://styled-components.com/), a CSS-in-JS library for styling components
 - [Framer Motion](https://www.framer.com/api/motion/), a React animation library to animate accordion components
-- [Axios](https://axios-http.com/docs/intro) a promise-based HTTP client for the browser and node.js
+- [Axios](https://axios-http.com/docs/intro), a promise-based HTTP client for the browser and node.js
 
-It doesn't currently contain any tests. For a production application, I would definitely (at a minimum) write unit tests for all functions using Jest or Chai+ Mocha.
+It doesn't currently contain any tests. For a production application, I would definitely (at a minimum) write unit tests for all functions using Jest or Chai + Mocha.
 
-The app is also admittedly very ugly! In a production environment, I would polish quite a few design details that include finessing paddings and margin, as well as replacing the + and - text in the accordion containers with icons. I'd more than likely insert them as pseudo-elements (so that they don't appear in the DOM, for accessibility reasons—although there are plenty of other ways to hide things from screen-readers), and alternatively add a button with an aria-attribute (`aria-expanded`) to toggle the actual open/close state of the container.
+The app is also admittedly very ugly! In a production environment, I would polish quite a few design details that include finessing paddings and margin, as well as replacing the + and - text in the accordion containers with icons. I would also focus on making sure the accordions are accessible, with tasks that include adding a button with an aria-attribute (`aria-expanded`) to toggle the actual open/close state of the container — and making sure that any visual UI elements are not read aloud to a screen-reader.
 
 ## Available Scripts
 
