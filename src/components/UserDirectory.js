@@ -44,7 +44,8 @@ const getCategoryTitles = (users) => {
   });
 
   // Remove duplicates using a set
-  // A set is case-sensitive, so this will not remove duplicates that differ in capitalization
+  // Note: A set is case-sensitive, so this alone will not remove
+  // any duplicates that differ in capitalization
   const uniqueLocations = new Set(allLocations);
   const uniqueDepartments = new Set(allDepartments);
   const uniqueTitles = new Set(allTitles);
@@ -66,23 +67,28 @@ const getCategoryTitles = (users) => {
   ];
 };
 
-const filterByCategory = (userDirectory, filterPreference) => {
-  let filteredData = [...userDirectory];
-  if (filterPreference.location !== null) {
-    filteredData = userDirectory.filter(
-      (user) => user.location === filterPreference.location
-    );
-  }
-  if (filterPreference.department !== null) {
-    filteredData = userDirectory.filter(
-      (user) => user.department === filterPreference.department
-    );
-  }
-  if (filterPreference.title !== null) {
-    filteredData = userDirectory.filter(
-      (user) => user.title === filterPreference.title
-    );
-  }
+const getFilteredUsers = (userDirectory, filterPreference) => {
+  let filteredData;
+
+  // Get list of all user metadata categories
+  const filterCategories = Object.keys(filterPreference);
+
+  filterCategories.forEach((category) => {
+    // If data hasn't been filtered yet, use existing userDirectory data
+    if (!filteredData && filterPreference[category] !== null) {
+      filteredData = userDirectory.filter(
+        (metadata) => metadata[category] === filterPreference[category]
+      );
+    }
+    // Otherwise use previously filtered data
+    else if (filteredData && filterPreference[category] !== null) {
+      const prevFilteredData = [...filteredData];
+      filteredData = prevFilteredData.filter(
+        (metadata) => metadata[category] === filterPreference[category]
+      );
+    }
+  });
+
   return filteredData;
 };
 
@@ -94,7 +100,18 @@ const UserDirectory = () => {
     location: null,
   });
 
-  const filteredData = filterByCategory(userDirectory, filterPreference);
+  const userDefinedPreferences = Object.values(filterPreference).some(
+    (value) => value !== null
+  );
+
+  const filteredUserDirectory = getFilteredUsers(
+    userDirectory,
+    filterPreference
+  );
+  const visibleData = userDefinedPreferences
+    ? filteredUserDirectory
+    : userDirectory;
+
   const categoryTitles =
     userDirectory.length && getCategoryTitles(userDirectory);
 
@@ -104,7 +121,7 @@ const UserDirectory = () => {
       .then((res) => setUserDirectory(res));
   }, []);
 
-  return filteredData.length ? (
+  return userDirectory.length ? (
     <>
       <header style={{ margin: "2rem auto", textAlign: "center" }}>
         <h1>User Directory</h1>
@@ -132,7 +149,7 @@ const UserDirectory = () => {
           ))}
         </aside>
         <div>
-          {filteredData.map((user, i) => (
+          {visibleData.map((user, i) => (
             <Card user={user} key={`user_${i}`} />
           ))}
         </div>
