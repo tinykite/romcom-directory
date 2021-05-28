@@ -22,6 +22,7 @@ const AccordionList = styled.ul`
 const AccordionListItem = styled.li`
   cursor: pointer;
   padding: 0.25rem;
+  margin-top: 0.25rem;
   background: ${(props) => props.selected && "black"};
   color: ${(props) => (props.selected ? "#FFF" : "#000")};
   border-radius: ${(props) => props.selected && "5px"};
@@ -48,8 +49,9 @@ const Accordion = ({ category, filterPreference, setFilterPreference }) => {
     <>
       <section>
         <AccordionHeader onClick={() => setExpanded(!expanded)}>
-          <AccordionTitle>{categoryTitle}</AccordionTitle>
-          {expanded ? "-" : "+"}
+          <AccordionTitle>
+            {categoryTitle} {expanded ? "-" : "+"}
+          </AccordionTitle>
         </AccordionHeader>
         <AnimatePresence>
           {expanded && (
