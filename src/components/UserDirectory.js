@@ -135,7 +135,7 @@ const UserDirectory = () => {
       .then((res) => setUserDirectory(res));
   }, []);
 
-  return userDirectory.length ? (
+  return (
     <>
       <DirectoryHeader>
         <h1>User Directory</h1>
@@ -144,29 +144,29 @@ const UserDirectory = () => {
           every romantic comedy ever.
         </em>
       </DirectoryHeader>
-      <DirectoryMain>
-        <aside>
-          <h2>Filter By</h2>
-          {categoryTitles.map((category, i) => (
-            <Accordion
-              category={category}
-              key={category}
-              filterPreference={filterPreference}
-              setFilterPreference={setFilterPreference}
-            />
-          ))}
-        </aside>
-        <div>
-          {visibleData.length
-            ? visibleData.map((user, i) => (
-                <Card user={user} key={`user_${i}`} />
-              ))
-            : "No users match this criteria"}
-        </div>
-      </DirectoryMain>
+      {userDirectory.length && (
+        <DirectoryMain>
+          <aside>
+            <h2>Filter By</h2>
+            {categoryTitles.map((category, i) => (
+              <Accordion
+                category={category}
+                key={category}
+                filterPreference={filterPreference}
+                setFilterPreference={setFilterPreference}
+              />
+            ))}
+          </aside>
+          <div>
+            {visibleData.length
+              ? visibleData.map((user, i) => (
+                  <Card user={user} key={`user_${i}`} />
+                ))
+              : "No users match this criteria"}
+          </div>
+        </DirectoryMain>
+      )}
     </>
-  ) : (
-    "Loading"
   );
 };
 
