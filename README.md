@@ -4,6 +4,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 - [Styled Components](https://styled-components.com/), a CSS-in-JS library
 - [Framer Motion](https://www.framer.com/api/motion/), a React animation library
+- [Axios](https://axios-http.com/docs/intro) a promise-based HTTP client for the browser and node.js
 
 ## Available Scripts
 
